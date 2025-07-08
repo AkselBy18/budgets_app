@@ -1,4 +1,4 @@
-package com.example.budget_app
+package com.example.budgetapp
 
 import org.junit.Test
 
