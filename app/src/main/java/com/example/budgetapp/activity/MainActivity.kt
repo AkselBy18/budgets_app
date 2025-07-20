@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity() {
                     "17-07-2025"
                 ))
             }
-
         }.start()
     }
 
@@ -64,7 +63,18 @@ class MainActivity : AppCompatActivity() {
         Thread {
             val movements = dao.getAllMovements()
             runOnUiThread {
-                adapter = MovementAdapter(movements)
+                adapter = MovementAdapter(
+                    movements = movements,
+                    onEditClick = { movement ->
+                        val editIntent = Intent(this, MovementForm::class.java)
+                        editIntent.putExtra("movementId", movement.id)
+                        startActivity(editIntent)
+                    },
+                    onDeleteClick = { movement ->
+                        dao.deleteMovement(movement)
+                        runOnUiThread { loadMovements() }
+                    }
+                )
                 recyclerView.adapter = adapter
             }
         }.start()

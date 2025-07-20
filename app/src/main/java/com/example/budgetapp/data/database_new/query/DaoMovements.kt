@@ -17,7 +17,7 @@ interface DaoMovements {
     @Update fun updateMovement(movement: List<EntityMovement>)
 
     @Query("SELECT * FROM movements") fun getAllMovements(): List<EntityMovement>
-    @Query("SELECT * FROM movements WHERE id = :id") fun getMovementById(id: Int): EntityMovement
+    @Query("SELECT * FROM movements WHERE id = :id") fun getMovementById(id: Int): EntityMovement?
 
     @Delete fun deleteMovement(movement: EntityMovement)
     @Delete fun deleteMovement(movement: List<EntityMovement>)

@@ -3,6 +3,8 @@ import android.provider.CalendarContract.Colors
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
@@ -10,9 +12,12 @@ import com.example.budgetapp.R
 import com.example.budgetapp.data.database_new.entities.EntityMovement
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.*
 
-class MovementAdapter(private val movements: List<EntityMovement>): RecyclerView.Adapter<MovementAdapter.MovementViewHolder>() {
+class MovementAdapter(
+    private val movements: List<EntityMovement>,
+    private val onEditClick: (EntityMovement) -> Unit,
+    private val onDeleteClick: (EntityMovement) -> Unit
+): RecyclerView.Adapter<MovementAdapter.MovementViewHolder>() {
 
     inner class MovementViewHolder(val itemView: View) : RecyclerView.ViewHolder (itemView) {
         val textAmount: TextView = itemView.findViewById(R.id.textAmount)
@@ -20,6 +25,7 @@ class MovementAdapter(private val movements: List<EntityMovement>): RecyclerView
         val textSign: TextView = itemView.findViewById(R.id.textSign)
         val textDetail: TextView = itemView.findViewById(R.id.textDetail)
         val textDate: TextView = itemView.findViewById(R.id.textDate)
+        val btnMenu: ImageButton = itemView.findViewById(R.id.btnMenu)
 
     }
 
@@ -42,6 +48,30 @@ class MovementAdapter(private val movements: List<EntityMovement>): RecyclerView
         holder.textDate.text = outputFormat.format(date!!)
         holder.textSign.setTextColor(colorText)
         holder.textAmount.setTextColor(colorText)
+
+        holder.btnMenu.setOnClickListener {
+            val popup = PopupMenu(holder.btnMenu.context, holder.btnMenu)
+            popup.inflate(R.menu.item_movement_menu)
+            popup.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_edit -> {
+                        onEditClick(movement)
+                        true
+                    }
+                    R.id.action_delete -> {
+                        onDeleteClick(movement)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            try {
+                popup.show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
     }
     override fun getItemCount(): Int = movements.size
 }

@@ -53,6 +53,23 @@ class MovementForm : AppCompatActivity() {
             }
         }
 
+        Thread {
+            val movementId = intent.getIntExtra("movementId", -1)
+            if (movementId != -1) {
+                val movement = movementDao.getMovementById(movementId)
+                Log.d(TAG, "Movement: $movement")
+                if (movement !== null) {
+                    runOnUiThread {
+                        binding.editTextAmount.setText(movement.amount.toString())
+                        binding.editTextCategory.setText(movement.categoryName)
+                        binding.editTextDetail.setText(movement.detail)
+                        binding.editTextDate.setText(movement.date)
+                        sign = movement.sign
+                        updateButtonToggle()
+                    }
+                }
+            }
+        }.start()
         updateButtonToggle()
     }
 
