@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">BudgetApp</string>
+    <string name="movement_list">Lista de movimientos</string>
+    <string name="sample_amount">100.00</string>
+    <string name="sample_sign">+</string>
+    <string name="sample_description">Movemiento de tipo gastos de 100 unidades</string>
+    <string name="sample_category">Gastos personales</string>
+    <string name="sample_date">Jueves, 10 de Julio</string>
+
+    // MovementForm Activity
+    <string name="movement_add">Agregar de movimiento</string>
+    <string name="movement_edit">Editar de movimiento</string>
+    <string name="incomes">Ingreso</string>
+    <string name="expenses">Gasto</string>
+    <string name="btn_save">Guardar</string>
+    <string name="date">Fecha</string>
 </resources>
