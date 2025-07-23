@@ -1,18 +1,11 @@
 package com.example.budgetapp.activity
-
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.budgetapp.R
 import com.example.budgetapp.databinding.ActivityMovementFormBinding
 import android.util.Log
 import androidx.core.graphics.toColorInt
-import androidx.recyclerview.widget.RecyclerView
-import com.example.budgetapp.adapters.MovementAdapter
 import com.example.budgetapp.data.database_new.DbConnect
 import com.example.budgetapp.data.database_new.entities.EntityMovement
 
@@ -23,6 +16,9 @@ class MovementForm : AppCompatActivity() {
     private var sign: String = "-"
     private var database = DbConnect.getDB(this)
     private var movementDao = database.daoMovements()
+    private var isUpdate: Boolean = false
+    private var idMovement: Int = -1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +52,11 @@ class MovementForm : AppCompatActivity() {
         Thread {
             val movementId = intent.getIntExtra("movementId", -1)
             if (movementId != -1) {
+                idMovement = movementId
                 val movement = movementDao.getMovementById(movementId)
                 Log.d(TAG, "Movement: $movement")
                 if (movement !== null) {
+                    isUpdate = true
                     runOnUiThread {
                         binding.editTextAmount.setText(movement.amount.toString())
                         binding.editTextCategory.setText(movement.categoryName)
@@ -79,14 +77,29 @@ class MovementForm : AppCompatActivity() {
         val category = binding.editTextCategory.text.toString()
         val date = binding.editTextDate.text.toString()
 
-        movementDao.insertMovement(EntityMovement(
-            0,
-            amount,
-            sign,
-            description,
-            category,
-            date
-        ))
+        if (isUpdate) {
+            movementDao.updateMovement(
+                EntityMovement(
+                    idMovement,
+                    amount,
+                    sign,
+                    description,
+                    category,
+                    date
+                )
+            )
+        } else {
+            movementDao.insertMovement(
+                EntityMovement(
+                    0,
+                    amount,
+                    sign,
+                    description,
+                    category,
+                    date
+                )
+            )
+        }
         goBack()
     }
 

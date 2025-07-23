@@ -1,10 +1,15 @@
 package com.example.budgetapp.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.budgetapp.R
@@ -20,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val dao by lazy { DbConnect.getDB(this).daoMovements() }
     private val TAG: String = "MainActivity"
     private lateinit var binding: ActivityMainBinding
+    private var movements: List<EntityMovement> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         Thread {
-            val movements = dao.getAllMovements()
+            movements = dao.getAllMovements()
 
             Log.d(TAG, "Number of movements: ${movements.size}")
 
@@ -59,9 +65,36 @@ class MainActivity : AppCompatActivity() {
         loadMovements()
     }
 
+    private fun showDeleteDialog(movement: EntityMovement) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirm, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
+
+        btnCancel?.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnConfirm?.setOnClickListener {
+            dialog.dismiss()
+            Thread {
+                dao.deleteMovement(movement)
+                runOnUiThread {
+                    loadMovements()
+                }
+            }.start()
+        }
+
+        dialog.show()
+    }
+
     private fun loadMovements() {
         Thread {
-            val movements = dao.getAllMovements()
+            movements = dao.getAllMovements()
+            this.setBalance()
             runOnUiThread {
                 adapter = MovementAdapter(
                     movements = movements,
@@ -71,11 +104,26 @@ class MainActivity : AppCompatActivity() {
                         startActivity(editIntent)
                     },
                     onDeleteClick = { movement ->
-                        dao.deleteMovement(movement)
-                        runOnUiThread { loadMovements() }
+                        showDeleteDialog(movement)
                     }
                 )
                 recyclerView.adapter = adapter
+            }
+        }.start()
+    }
+
+    private fun setBalance() {
+        Thread {
+            val totalBalance = movements.sumOf {
+                if (it.sign == "+") it.amount else -it.amount
+            }
+            runOnUiThread {
+                binding.textViewBalance.text = "$totalBalance"
+                if (totalBalance < 0) {
+                    binding.textViewBalance.setTextColor("#FF0B55".toColorInt())
+                } else {
+                    binding.textViewBalance.setTextColor("#0BFF96".toColorInt())
+                }
             }
         }.start()
     }

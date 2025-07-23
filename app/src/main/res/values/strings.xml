@@ -8,6 +8,7 @@
     <string name="sample_date">Jueves, 10 de Julio</string>
     <string name="option_edit">Editar</string>
     <string name="option_delete">Eliminar</string>
+    <string name="general_balance">Balance general:</string>
 
     // MovementForm Activity
     <string name="movement_add">Agregar de movimiento</string>
@@ -16,4 +17,10 @@
     <string name="expenses">Gasto</string>
     <string name="btn_save">Guardar</string>
     <string name="date">Fecha</string>
+
+    //Dialog
+    <string name="dialog_confirm_title">¿Esta seguro?</string>
+    <string name="dialog_confirm_message">¿Esta seguro de que desea eliminar este movimiento?</string>
+    <string name="dialog_confirm_positive">Si</string>
+    <string name="dialog_confirm_negative">No</string>
 </resources>
